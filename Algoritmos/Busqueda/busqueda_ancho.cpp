@@ -1,27 +1,24 @@
-#include<iostream>
-#include<queue>
-#include<vector>
+#include<bits/stdc++.h>
 
 
 using namespace std;
 
 int leerX(vector<int> nodes[],int edges){
-	int a,b;
-	
+	char a,b;
 	
 	for(int i=0;i<edges;i++){
 		cin>>a>>b;
-		nodes[a].push_back(b);
-		nodes[b].push_back(a);
+		nodes[a-'A'].push_back(b-'A');
+		nodes[b-'A'].push_back(a-'A');
 	}
 }
 
 int imprimir(vector<int> nodes[], int edges){
 	for(int i=0;i<1000;i++){
 		if(!nodes[i].empty()){
-			cout<<"[ "<<i<<" ]"<<"-->";
+			cout<<"[ "<<char(i+65)<<" ]"<<"-->";
 			for(vector<int>::iterator it=nodes[i].begin(); it!=nodes[i].end();++it){
-				cout<<*it<<"-->";
+				cout<<char(*it+65)<<"-->";
 			}
 			cout<<"NULL"<<endl;
 		}	
@@ -36,14 +33,14 @@ int visitar(queue<int> que, bool visited[1000], vector<int> nodes[]){
 	for(int i=0;i<1000;i++)
 		visited[i]=false;
 
-	int start;
+	char start;
 	cout<<"\nEnter the starting node"<<endl;
 	cin>>start;
 
 	//indica por donde se desea empezar
-	que.push(start);
+	que.push(start-'A');
 	//señala los nodos visitados
-	visited[start]=true;
+	visited[start-'A']=true;
 
 
 	cout<<"\nBFS Traversal\n";
@@ -51,7 +48,7 @@ int visitar(queue<int> que, bool visited[1000], vector<int> nodes[]){
 	while(!que.empty()){
 		//saca de la cola para imprimir
 		int front = que.front();
-		cout<<front<<" ";
+		cout<<char(front+65)<<" ";
 		que.pop();
 		
 

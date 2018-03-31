@@ -18,8 +18,8 @@ struct node{
 typedef vector<node> vii;
 typedef vector<vii> vvii;
 
-void ucs(node start,node final,vvii graph){
-	priority_queue<node> storage;
+void dfs(node start,node final,vvii graph){
+	stack<node> storage;
 	vector<bool> memo(graph.size(),false);
 	storage.push(start);
 	while(!storage.empty() and storage.top().index != final.index){
@@ -62,6 +62,6 @@ int main(){
 		tmp.weight=weight;
 		graph[index-'A'].push_back(tmp);
 	}
-	ucs(start,final,graph);
+	dfs(start,final,graph);
 	return 0;
 }
