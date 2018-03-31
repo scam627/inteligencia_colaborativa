@@ -5,6 +5,7 @@ using namespace std;
 
 struct node{
 	char index;
+	string rute;
 	int weight;
 	bool operator < (const node &other) const {
 		if(other.weight < weight)
@@ -17,23 +18,27 @@ struct node{
 typedef vector<node> vii;
 typedef vector<vii> vvii;
 
-void ufs(node start,node final,vvii graph){
+void ucs(node start,node final,vvii graph){
 	priority_queue<node> storage;
 	vector<bool> memo(graph.size(),false);
 	storage.push(start);
 	while(!storage.empty() and storage.top().index != final.index){
-		node tope=storage.top();
-		memo[tope.index-'A']=true;
-		cout<<tope.index<<" ";
+		node top=storage.top();
+		memo[top.index-'A']=true;
+		//cout<<top.index<<" ";		// estado del tope de la cola
 		storage.pop();
-		for(auto item : graph[tope.index-'A']){
+		for(auto item : graph[top.index-'A']){
 			if(!memo[item.index-'A']){
-				item.weight+=tope.weight;
+				item.rute+=top.rute;
+				item.weight+=top.weight;
 				storage.push(item);
 			}
 		}
 	}
-	cout<<"\n";
+	if(storage.empty())
+		cout<<"Not solution\n";
+	else
+		cout<<storage.top().rute<<" "<<storage.top().weight<<"\n";
 }
 
 
@@ -42,9 +47,10 @@ int main(){
 	node start,final;
 	cin>>nodes>>edges;
 	vvii graph(nodes+1);
-	start.index='J';
+	cin>>start.index>>final.index;
+	start.rute+=start.index;
 	start.weight=0;
-	final.index='E';
+	final.rute+=final.index;
 	final.weight=0;
 	while(edges--){
 		int weight;
@@ -52,14 +58,10 @@ int main(){
 		node tmp;
 		cin>>index>>neighbor>>weight;
 		tmp.index=neighbor;
+		tmp.rute=neighbor;
 		tmp.weight=weight;
 		graph[index-'A'].push_back(tmp);
 	}
-	ufs(start,final,graph);
-	/*for(auto item : graph){
-		for(auto element : item)
-			cout<<"vecino: "<<element.index<<" peso:"<<element.weight<<" ";
-		cout<<"\n";
-	}*/
+	ucs(start,final,graph);
 	return 0;
 }
