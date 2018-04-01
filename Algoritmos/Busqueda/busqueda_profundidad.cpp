@@ -7,12 +7,6 @@ struct node{
 	char index;
 	string rute;
 	int weight;
-	bool operator < (const node &other) const {
-		if(other.weight < weight)
-			return true;
-		else
-			return false;
-	}
 };
 
 typedef vector<node> vii;
