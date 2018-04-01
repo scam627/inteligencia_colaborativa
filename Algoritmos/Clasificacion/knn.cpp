@@ -35,7 +35,7 @@ int distance(int x, int y){ //recibir vector de puntos acá
 	pair<int, int> pairPunto(x,y);
 	Vpuntos.push_back(pairPunto);
 	
-	for(int i=0;i<7; i++){ //Vpuntos.size;
+	for(int i=0;i<Vpuntos.size(); i++){ //Vpuntos.size;
 		d = pow((x - Vpuntos[i].first),2) + pow((y - Vpuntos[i].second),2);
 		Vdist[i] = d;
 	}
