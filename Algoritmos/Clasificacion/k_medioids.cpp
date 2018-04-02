@@ -24,7 +24,7 @@ public:
 class k_medioids{
 private:
 	int k;
-	vector<point> medioids;
+	vector<int> medioids;
 	vector<pair<point,int>> points;
 	vector<vector<double>> distances;
 	vector<pair<double,int>> sigma;
@@ -36,12 +36,84 @@ public:
 		distances.resize(n);
 		sigma.resize(n);
 	}
+
 	void add_point(const point &a,int i){
 		pair<point,int> tmp(a,0);
 		points[i]=tmp;
 	}
-	void floyd_distances(){
+
+	void init_medioids(){
+		vector<bool> memo(points.size(),false);
+		srand(time(0));	
+		int i=0;
+		while(i<medioids.size()){
+			int random=rand()%points.size();
+			if(!memo[random]){
+				medioids[i]=random;
+				memo[random]=true;
+				i++;
+			}
+		}
+	}
+
+	void execute(){
 		assert(points.size() > 1);
+		init_medioids();
+		floyd_distances();
+		tagged_points();
+		for (int i = 0; i < medioids.size(); i++){
+			cout<<medioids[i]<<" ";
+		}
+		cout<<"\n";
+
+	}
+
+	void average_sigma(){
+		for (int i=0; i < sigma.size(); i++)
+			sigma[i].first/=(points.size()-1);
+	}
+
+	vector<pair<double,int>>& get_sigma(){
+		assert(sigma.size());
+		return sigma;
+	};
+
+	~k_medioids(){}
+
+private:
+	void tagged_points(){
+		vector<bool> memo(points.size(),false);
+		for(auto x : medioids){
+			memo[x]=true;
+			points[x].second=x;
+		}
+		for(int i=0;i<points.size();i++){
+			if(!memo[i]){
+				double min=(1<<30)-1;
+				int index;
+				cout<<i<<" -> ";	
+				for(int j=0;j<medioids.size();j++){
+					double tmp;
+					if(medioids[j]<i)
+						tmp=distances[medioids[j]][(i-medioids[j])-1];
+					else
+						tmp=distances[i][(medioids[j]-i)-1];
+					cout<<tmp<<" ";
+					if(tmp<min){
+						min=tmp;
+						index=medioids[j];
+					}
+				}
+				cout<<"\n";
+				points[i].second=index;
+				memo[i]=true;
+			}
+		}
+		for(auto item : points)
+			cout<<item.second<<" ";
+		cout<<"\n";
+	}
+	void floyd_distances(){
 		for(int i=0 ;i < points.size(); i++){
 			for(int j=i+1 ; j < points.size() ; j++){
 				double distance = points[i].first.dist(points[j].first);
@@ -56,35 +128,27 @@ public:
 		}
 		sort(sigma.begin(), sigma.end());
 	}
-	vector<pair<double,int>>& get_sigma(){
-		assert(sigma.size());
-		return sigma;
-	};
-	void average_sigma(){
-		for (int i=0; i < sigma.size(); i++)
-			sigma[i].first/=(points.size()-1);
-	}
-	~k_medioids(){}
+
 };
 
 //-----------------------------------------------------------------//
-// Declaracion de las clases necesarias para ejecutar el algoritmo //
+//                       Ejecucion del algoritmo                   //
 //_________________________________________________________________//
 
 int main(){
-	int n;
-	cin>>n;
-	k_medioids clasificador(2,n);
+	int n,k;
+	cin>>n>>k;
+	k_medioids clasificador(k,n);
 	for(int i=0;i<n;i++){
 		int x,y;
 		cin>>x>>y;
 		point tmp(x,y);
 		clasificador.add_point(tmp,i);
 	}
-	clasificador.floyd_distances();
-	vector<pair<double,int>> sigma=clasificador.get_sigma();
-	for(auto item : sigma)
-		cout<<setprecision(5)<<fixed<<item.first<<" tag: "<<item.second<<" ";
-	cout<<"\n";
+	clasificador.execute();
+	//vector<pair<double,int>> sigma=clasificador.get_sigma();
+	//for(auto item : sigma)
+	//	cout<<setprecision(5)<<fixed<<item.first<<" tag: "<<item.second<<" ";
+	//cout<<"\n";
 	return 0;
 }
