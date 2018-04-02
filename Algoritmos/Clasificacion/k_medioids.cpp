@@ -2,51 +2,88 @@
 
 using namespace std;
 
-struct point{
-	long long x,y;
-	point() {}	
-	point(long long X,long long Y): x(X), y(Y) {}	
+//-----------------------------------------------------------------//
+// Declaracion de las clases necesarias para ejecutar el algoritmo //
+//_________________________________________________________________//
+
+class point{
+private:
+	int x,y;
+public:
+	point(){}
+	point(int X,int Y): x(X), y(Y){}
+	int distsqrt(const point &b){
+		return (x-b.x)*(x-b.x)+(y-b.y)*(y-b.y);
+	}
+	double dist(const point &b){
+		return sqrt(distsqrt(b));
+	}
+	~point(){}
 };
 
-typedef vector<point> vp;
-typedef vector<vector<double long>> vd;
+class k_medioids{
+private:
+	int k;
+	vector<point> medioids;
+	vector<pair<point,int>> points;
+	vector<vector<double>> distances;
+	vector<pair<double,int>> sigma;
+public:
+	k_medioids(){}
+	k_medioids(int K,int n): k(K){
+		medioids.resize(K);
+		points.resize(n);
+		distances.resize(n);
+		sigma.resize(n);
+	}
+	void add_point(const point &a,int i){
+		pair<point,int> tmp(a,0);
+		points[i]=tmp;
+	}
+	void floyd_distances(){
+		assert(points.size() > 1);
+		for(int i=0 ;i < points.size(); i++){
+			for(int j=i+1 ; j < points.size() ; j++){
+				double distance = points[i].first.dist(points[j].first);
+				pair<double, int> distance_i(distance,i);
+				pair<double, int> distance_j(distance,j);
+				distances[i].push_back(distance);
+				sigma[i].first+=distance_i.first;
+				sigma[i].second=distance_i.second;
+				sigma[j].first+=distance_j.first;
+				sigma[j].second=distance_j.second;
+			}
+		}
+		sort(sigma.begin(), sigma.end());
+	}
+	vector<pair<double,int>>& get_sigma(){
+		assert(sigma.size());
+		return sigma;
+	};
+	void average_sigma(){
+		for (int i=0; i < sigma.size(); i++)
+			sigma[i].first/=(points.size()-1);
+	}
+	~k_medioids(){}
+};
 
-long long distsqrt(const point &a, const point &b){
-	return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
-}
-
-double long dist(const point &a, const point &b){
-	return sqrt(distsqrt(a,b));
-}
+//-----------------------------------------------------------------//
+// Declaracion de las clases necesarias para ejecutar el algoritmo //
+//_________________________________________________________________//
 
 int main(){
 	int n;
 	cin>>n;
-	vp data(n);
+	k_medioids clasificador(2,n);
 	for(int i=0;i<n;i++){
-		long long x,y;
+		int x,y;
 		cin>>x>>y;
 		point tmp(x,y);
-		data[i]=tmp;
+		clasificador.add_point(tmp,i);
 	}
-	vd distances(n);
-	vector<pair<double long,long long>> average(n);
-	for(int i=0;i<n;i++){
-		for(int j=i+1;j<n;j++){
-			double long distance=dist(data[i],data[j]);
-			pair<double long, long long> distance_i(distance,i);
-			pair<double long, long long> distance_j(distance,j);
-			distances[i].push_back(distance);
-			average[i].first+=distance_i.first;
-			average[i].second=distance_i.second;
-			average[j].first+=distance_j.first;
-			average[j].second=distance_j.second;
-		}
-	}
-	for (int i=0; i < average.size(); i++)
-		average[i].first/=(n-1);
-	sort(average.begin(), average.end());
-	for(auto item : average)
+	clasificador.floyd_distances();
+	vector<pair<double,int>> sigma=clasificador.get_sigma();
+	for(auto item : sigma)
 		cout<<setprecision(5)<<fixed<<item.first<<" tag: "<<item.second<<" ";
 	cout<<"\n";
 	return 0;
