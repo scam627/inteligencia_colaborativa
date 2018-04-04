@@ -25,16 +25,16 @@ class k_medioids{
 private:
 	int k;
 	vector<int> medioids;
-	vector<pair<point,int>> points;
-	vector<vector<double>> distances;
-	vector<pair<double,int>> sigma;
+	vector<pair<point,int>> points;				
+	vector<vector<double>> distances;			
+	//vector<pair<double,int>> sigma;
 public:
 	k_medioids(){}
 	k_medioids(int K,int n): k(K){
 		medioids.resize(K);
 		points.resize(n);
 		distances.resize(n);
-		sigma.resize(n);
+		//sigma.resize(n);
 	}
 
 	void add_point(const point &a,int i){
@@ -60,37 +60,46 @@ public:
 		assert(points.size() > 1);
 		init_medioids();
 		floyd_distances();
-		tagged_points();
+		vector<vector<int>> groups(medioids.size());
+		tag(groups);
+		cout<<"Centroides:\n";
 		for (int i = 0; i < medioids.size(); i++){
 			cout<<medioids[i]<<" ";
 		}
 		cout<<"\n";
-
+		cout<<"Groups:\n";
+		for(auto x : groups){
+			for(auto y : x)
+				cout<<y<<" ";
+			cout<<"\n";
+		}
+		iteration(groups);
 	}
 
-	void average_sigma(){
-		for (int i=0; i < sigma.size(); i++)
-			sigma[i].first/=(points.size()-1);
-	}
+	//void average_sigma(){
+	//	for (int i=0; i < sigma.size(); i++)
+	//		sigma[i].first/=(points.size()-1);
+	//}
 
-	vector<pair<double,int>>& get_sigma(){
-		assert(sigma.size());
-		return sigma;
-	};
+	//vector<pair<double,int>>& get_sigma(){
+	//	assert(sigma.size());
+	//	return sigma;
+	//};
 
 	~k_medioids(){}
 
 private:
-	void tagged_points(){
+	void tag(vector<vector<int>>& groups){
 		vector<bool> memo(points.size(),false);
-		for(auto x : medioids){
-			memo[x]=true;
-			points[x].second=x;
+		for(int i=0;i<medioids.size();i++){
+			memo[medioids[i]]=true;
+			points[medioids[i]].second=medioids[i];
+			groups[i].push_back(medioids[i]);
 		}
 		for(int i=0;i<points.size();i++){
 			if(!memo[i]){
 				double min=(1<<30)-1;
-				int index;
+				int tag,index;
 				cout<<i<<" -> ";	
 				for(int j=0;j<medioids.size();j++){
 					double tmp;
@@ -100,12 +109,14 @@ private:
 						tmp=distances[i][(medioids[j]-i)-1];
 					cout<<tmp<<" ";
 					if(tmp<min){
+						index=j;
 						min=tmp;
-						index=medioids[j];
+						tag=medioids[j];
 					}
 				}
 				cout<<"\n";
-				points[i].second=index;
+				points[i].second=tag;
+				groups[index].push_back(i);
 				memo[i]=true;
 			}
 		}
@@ -120,15 +131,37 @@ private:
 				pair<double, int> distance_i(distance,i);
 				pair<double, int> distance_j(distance,j);
 				distances[i].push_back(distance);
-				sigma[i].first+=distance_i.first;
-				sigma[i].second=distance_i.second;
-				sigma[j].first+=distance_j.first;
-				sigma[j].second=distance_j.second;
+				//sigma[i].first+=distance_i.first;
+				//sigma[i].second=distance_i.second;
+				//sigma[j].first+=distance_j.first;
+				//sigma[j].second=distance_j.second;
 			}
 		}
-		sort(sigma.begin(), sigma.end());
+		//sort(sigma.begin(), sigma.end());
 	}
-
+	void iteration(vector<vector<int>>& groups){
+		for(auto item : groups){
+			vector<pair<double,int>> sigma(item.size());
+			for(int i=0;i<item.size();i++){
+				sigma[i].second=item[i];
+				for(int j=i+1;j<item.size();j++){
+					double tmp;
+					if(item[j]<item[i])
+						tmp=distances[item[j]][(item[i]-item[j])-1];
+					else
+						tmp=distances[item[i]][(item[j]-item[i])-1];
+					sigma[i].first+=tmp;
+					sigma[j].first+=tmp;
+				}
+			}
+			cout<<" | ";
+			for(auto x : sigma){
+				cout<<x.first<<"->"<<x.second<<" | ";
+			}
+			cout<<"\n";
+		}
+		//sort(sigma.begin(), sigma.end());
+	}
 };
 
 //-----------------------------------------------------------------//
