@@ -10,4 +10,4 @@ Vectores
 
 
 * Complejidad de las distancias n² - (n²+n)/2
-* El priera incercion esta asignando al vector de puntos el tag 0 :)
+* El priera insercion esta asignando al vector de puntos el tag 0 :)
