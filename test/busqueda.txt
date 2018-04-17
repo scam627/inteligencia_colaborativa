@@ -1,3 +1,11 @@
+8
+6 5
+A F
+A B 2
+A C 2
+B D 3
+D E 1
+E F 2
 18 17
 J E 
 A G 20
@@ -84,6 +92,7 @@ C Z 3
 Z N 6
 Z X 10
 13 12
+C M
 C D 2
 C E 2
 C A 1

@@ -8,23 +8,28 @@ using namespace std;
 //_________________________________________________________________//
 
 int main(){
-	int n,k;
+	int n,k,x,y;
 	cin>>n>>k;
 	k_medioids clasificador(k,n);
 	for(int i=0;i<n;i++){
-		int x,y;
 		cin>>x>>y;
+		//cout<<x<<" "<<y<<"\n";
 		point tmp(x,y);
 		clasificador.add_point(tmp,i);
 	}
 	clasificador.initializate();
 	clasificador.execute();
-	point tmp(1,1);
+	//cout<<"NEW POINT ::::::::::::::::::::::::::::\n";
+	cin>>x>>y;
+	point tmp(x,y);
 	clasificador.insert_point(tmp);
-	for(auto item : clasificador.get_groups()){	
-		for(auto element : item)
-			cout<<element<<" ";
-		cout<<"\n";
+	int tag=clasificador.get_points().back().second;
+	vector<int> label(clasificador.get_medoids());
+	for(int i=0;i < label.size();i++){
+		if(label[i] == tag){
+			//cout<<"Pertenece al grupo ";
+			cout<<"\n"<<i;
+		}
 	}
 	return 0;
 }

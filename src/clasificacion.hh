@@ -5,12 +5,12 @@
 
 using namespace std;
 
-//-----------------------------------------------------------------//
-// Declaracion de las clases necesarias para ejecutar el algoritmo //
-//_________________________________________________________________//
+/*-----------------------------------------------------------------*
+ * Declaracion de las clases necesarias para ejecutar el algoritmo *
+ *_________________________________________________________________*/
 
 class point{
-private:
+public:
 	int x,y;
 public:
 	point(){}
@@ -60,22 +60,21 @@ public:
 		bool stop=false;
 		assert(points.size() > 1 && distances[0].size()>0);
 		while(!stop){
-			cout<<"Computing Algorithm\n";
-			//vector<vector<int>> gr(medioids.size());
+			//cout<<"Computing Algorithm\n";
 			for(auto& element : groups)
 				element.resize(0);
 			tag();
-			cout<<"Centroides:\n";
-			for (int i = 0; i < medioids.size(); i++){
-				cout<<medioids[i]<<" ";
-			}
-			cout<<"\n";
-			cout<<"Groups:\n";
-			for(auto x : groups){
-				for(auto y : x)
-					cout<<y<<" ";
-				cout<<"\n";
-			}		
+			//cout<<"Centroides:\n";
+			//for (int i = 0; i < medioids.size(); i++){
+			//	cout<<medioids[i]<<" ";
+			//}
+			//cout<<"\n";
+			//cout<<"Groups:\n";
+			//for(auto x : groups){
+			//	for(auto y : x)
+			//		cout<<y<<" ";
+			//	cout<<"\n";
+			//}		
 			stop = iteration();
 		}
 	}
@@ -91,6 +90,9 @@ public:
 	}
 	vector<vector<int>>& get_groups(){
 		return groups;
+	}
+	vector<int>& get_medoids(){
+		return medioids;
 	}
 	~k_medioids(){}
 
@@ -123,43 +125,43 @@ private:
 			if(!memo[i]){
 				double min=~(1LL<<63);
 				int tag,index;
-				cout<<i<<" -> ";	
+				//cout<<i<<" -> ";	
 				for(int j=0;j<medioids.size();j++){
 					double tmp;
 					if(medioids[j]<i)
 						tmp=distances[medioids[j]][(i-medioids[j])-1];
 					else
 						tmp=distances[i][(medioids[j]-i)-1];
-					cout<<tmp<<" ";
+					//cout<<tmp<<" ";
 					if(tmp<min){
 						index=j;
 						min=tmp;
 						tag=medioids[j];
 					}
 				}
-				cout<<"\n";
+				//cout<<"\n";
 				points[i].second=tag;
 				groups[index].push_back(i);
 				memo[i]=true;
 			}
 		}
-		for(auto item : points)
-			cout<<item.second<<" ";
-		cout<<"\n";
+		//for(auto item : points)
+		//	cout<<item.second<<" ";
+		//cout<<"\n";
 	}
 	void floyd_distances(){
 		for(int i=0 ;i < points.size(); i++){
 			for(int j=i+1 ; j < points.size() ; j++){
 				double distance = points[i].first.dist(points[j].first);
-				//pair<double, int> distance_i(distance,i);
-				//pair<double, int> distance_j(distance,j);
 				distances[i].push_back(distance);
 			}
 		}
 	}
 
 	void init_medioids(){
-		vector<bool> memo(points.size(),false);
+		for(int i=0;i<medioids.size();i++)
+			medioids[i]=i;
+		/*vector<bool> memo(points.size(),false);
 		srand(time(0));	
 		int i=0;
 		while(i<medioids.size()){
@@ -169,7 +171,7 @@ private:
 				memo[random]=true;
 				i++;
 			}
-		}
+		}*/
 	}
 
 	bool iteration(){
@@ -189,27 +191,27 @@ private:
 					sigma[j].first+=tmp;
 				}
 			}
-			cout<<"--------------------------------------------------------------------\n";
-			cout<<" | ";
-			for(auto x : sigma){
-				cout<<x.first<<"->"<<x.second<<" | ";
-			}
-			cout<<"\n";
+			//cout<<"--------------------------------------------------------------------\n";
+			//cout<<" | ";
+			//for(auto x : sigma){
+			//	cout<<x.first<<"->"<<x.second<<" | ";
+			//}
+			//cout<<"\n";
 			sort(sigma.begin(),sigma.end());
-			cout<<"New centroid should be: "<<sigma.front().second<<"\n";
-			cout<<" | ";
-			for(auto x : sigma){
-				cout<<x.first<<"->"<<x.second<<" | ";
-			}
-			cout<<"\n";
+			//cout<<"New centroid should be: "<<sigma.front().second<<"\n";
+			//cout<<" | ";
+			//for(auto x : sigma){
+			//	cout<<x.first<<"->"<<x.second<<" | ";
+			//}
+			//cout<<"\n";
 			if(sigma.front().second!=medioids[index]){
 				stop=false;
 				medioids[index]=sigma.front().second;
 			}
 			index++;
 		}
-		cout<<"FINAL ITERATION !!!\n";
-		cout<<"____________________________________________________________________\n";
+		//cout<<"FINAL ITERATION !!!\n";
+		//cout<<"____________________________________________________________________\n";
 		return stop;
 	}
 };
