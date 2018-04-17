@@ -12,8 +12,10 @@ busqueda: ./src/busqueda.hh busqueda.cpp main.cpp
 
 execute: busqueda
 	@echo "Ejecutando algoritmo"
+	@ cat ./test/origin.txt > ./test/prueba.txt
 	@./main < ./test/clasificacion.txt >> ./test/prueba.txt
 	@./busqueda < ./test/prueba.txt
+	@ cat ./test/origin.txt > ./test/prueba.txt
 
 clean:
 	@rm $(EXECUTE)
