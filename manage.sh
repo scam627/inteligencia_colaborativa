@@ -3,4 +3,4 @@
 # Compiling programs
 
 make execute
-#make clean
+make clean
