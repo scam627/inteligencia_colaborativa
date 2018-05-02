@@ -1,13 +1,7 @@
-12 11
-A I
-A B 10
-A C 5
-A D 12
-B E 2
-B F 4
-C G 3
-D H 1
-F I 6
-G K 5
-H L 3
-I J 10
+6 5
+A F
+A B 2
+A C 2
+B D 3
+D E 1
+E F 2
